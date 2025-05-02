@@ -1,6 +1,5 @@
 package ru.hogwarts.school.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentServiceImpl;
@@ -12,37 +11,36 @@ import java.util.Collection;
 public class StudentController {
     private final StudentServiceImpl studentService;
 
-    @Autowired
     public StudentController(StudentServiceImpl studentService) {
         this.studentService = studentService;
     }
 
-    @PostMapping
+    @PostMapping //Добавить объект
     public Student createStudent(@RequestBody Student student) {
         return studentService.createStudent(student);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") //Проверить объекты
     public Student getStudent(@PathVariable Long id) {
         return studentService.getStudent(id);
     }
 
-    @PutMapping
+    @PutMapping //Изменить объект
     public Student updateStudent(@RequestBody Student student) {
         return studentService.updateStudent(student);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") //Удалить объект
     public Student deleteStudent(@PathVariable Long id) {
         return studentService.deleteStudent(id);
     }
 
-    @GetMapping
+    @GetMapping //Посмотреть все объекты
     public Collection<Student> getAllStudent() {
         return studentService.getAllStudents();
     }
 
-    @GetMapping("/age/{age}")
+    @GetMapping("/age/{age}") //Посмотреть объекты по цвету
     public Collection<Student> getStudentsByAge(@PathVariable int age) {
         return studentService.findStudentByAge(age);
     }
