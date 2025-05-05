@@ -1,10 +1,12 @@
 package ru.hogwarts.school.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentServiceImpl;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -42,6 +44,16 @@ public class StudentController {
 
     @GetMapping("/age/{age}") //Посмотреть объекты по цвету
     public Collection<Student> getStudentsByAge(@PathVariable int age) {
-        return studentService.findStudentByAge(age);
+        return studentService.getStudentByAge(age);
+    }
+
+    @GetMapping("/students/by-age-range")
+    public List<Student> getStudentByAgeRange(@RequestParam int min, @RequestParam int max) {
+        return studentService.getStudentByAgeRange(min, max);
+    }
+
+    @GetMapping("/students/{id}/faculty")
+    public Faculty getFacultyOfStudent(@PathVariable Long id) {
+        return studentService.getFacultyByStudentId(id);
     }
 }

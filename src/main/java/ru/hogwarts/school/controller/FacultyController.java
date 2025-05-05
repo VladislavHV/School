@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyServiceImpl;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/faculty")
@@ -47,6 +49,17 @@ public class FacultyController {
 
     @GetMapping("/color/{color}") //Посмотреть объекты по цвету
     public Collection<Faculty> getFacultyByColor(@PathVariable String color) {
-        return facultyService.findFacultyFilter(color);
+        return facultyService.getFacultiesByColor(color);
     }
+
+    @GetMapping("/faculties/search")
+    public List<Faculty> findByNameOrColor(@RequestParam String query) {
+        return facultyService.findByNameOrColor(query);
+    }
+
+    @GetMapping("/faculties/{id}/students")
+    public List<Student> getStudentOfFaculty(@PathVariable Long id) {
+        return facultyService.getStudentByFacultyId(id);
+    }
+
 }
