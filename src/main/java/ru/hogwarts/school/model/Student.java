@@ -1,6 +1,7 @@
 package ru.hogwarts.school.model;
 
 import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Objects;
 
@@ -17,6 +18,12 @@ public class Student {
     @ManyToOne
     @JoinColumn(name="faculty_id")
     private Faculty faculty;
+
+    @Value("${path.to.avatars.folder}")
+    private String avatarsDir;
+
+    @OneToOne(mappedBy = "student", cascade= CascadeType.ALL)
+    private Avatar avatar;
 
     public Student(int age, Long id, String name) {
         this.age = age;
