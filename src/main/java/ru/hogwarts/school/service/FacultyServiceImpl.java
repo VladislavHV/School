@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,13 +23,14 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
+    @Transactional
     public Faculty createFaculty(Faculty faculty) {
         return facultyRepository.save(faculty);
     }
 
     @Override
     public Faculty getFaculty(Long id) {
-        return facultyRepository.findById(id).orElse(null);
+        return facultyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Факультет не найден по Id" + id));
     }
 
     @Override

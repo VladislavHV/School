@@ -13,7 +13,7 @@ public class Avatar {
     private Long id;
 
     @Lob
-    @Column(columnDefinition = "bytea")
+    @Column
     private byte[] data;
 
     private String filePath;

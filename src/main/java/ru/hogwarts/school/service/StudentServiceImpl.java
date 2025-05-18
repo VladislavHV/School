@@ -1,9 +1,8 @@
 package ru.hogwarts.school.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
@@ -22,17 +21,18 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student createStudent(@PathVariable Student student) {
+    @Transactional
+    public Student createStudent(Student student) {
         return studentRepository.save(student);
     }
 
     @Override
-    public Student getStudent(@PathVariable Long studentId) {
+    public Student getStudent(Long studentId) {
         return studentRepository.findById(studentId).orElse(null);
     }
 
     @Override
-    public Student updateStudent(@RequestBody Student student) {
+    public Student updateStudent(Student student) {
         if (studentRepository.existsById(student.getId())) {
             return studentRepository.save(student);
         }
@@ -40,7 +40,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student deleteStudent(@PathVariable Long studentId) {
+    public Student deleteStudent(Long studentId) {
         Optional<Student> student = studentRepository.findById(studentId);
         if (student.isPresent()) {
             studentRepository.deleteById(studentId);
@@ -69,5 +69,10 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         return student.getFaculty();
+    }
+
+    @Override
+    public Optional<Student> findById(Long id) {
+        return studentRepository.findById(id);
     }
 }

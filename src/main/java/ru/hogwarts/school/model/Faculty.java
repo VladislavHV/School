@@ -1,7 +1,6 @@
 package ru.hogwarts.school.model;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +18,6 @@ public class Faculty {
     @OneToMany(mappedBy = "faculty")
     private List<Student> students;
 
-    @Value("${path.to.avatars.folder}")
     private String avatarsDir;
 
     public Faculty(String color, Long id, String name) {

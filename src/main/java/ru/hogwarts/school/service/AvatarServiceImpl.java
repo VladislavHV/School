@@ -1,6 +1,7 @@
 package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ public class AvatarServiceImpl implements AvatarService {
     @Value("${path.to.avatars.folder}")
     private String avatarFolder;
 
+    @Autowired
     public AvatarServiceImpl(StudentRepository studentRepository, AvatarRepository avatarRepository) {
         this.studentRepository = studentRepository;
         this.avatarRepository = avatarRepository;
@@ -40,7 +42,9 @@ public class AvatarServiceImpl implements AvatarService {
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         Files.createDirectories(Path.of(avatarFolder));
+        Avatar avatar = findAvatar(studentId);
         Path filePath = Path.of(avatarFolder, student.getId() + "." + getExtensions(avatarFile.getOriginalFilename()));
+        avatar.setFilePath(filePath.toAbsolutePath().toString());
         try (
                 InputStream is = avatarFile.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
@@ -50,14 +54,6 @@ public class AvatarServiceImpl implements AvatarService {
             bis.transferTo(bos);
         }
 
-        //byte[] fileData = avatarFile.getBytes();
-
-        //String fileName = studentId + "_" + file.getOriginalFilename();
-        //Path filePath = Paths.get(avatarFolder, fileName);
-        //Files.createDirectories(filePath.getParent());
-        //file.transferTo(filePath.toFile());
-
-        Avatar avatar = findAvatar(studentId);
         avatar.setStudent(student);
         avatar.setFilePath(filePath.toString());
         avatar.setFileSize(avatarFile.getSize());
