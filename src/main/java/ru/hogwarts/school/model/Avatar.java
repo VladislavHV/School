@@ -12,8 +12,8 @@ public class Avatar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column
+    //@Lob вызывает ошибку SQLFeatureNotSupportedException
+    @Column(name = "data", columnDefinition = "BYTEA")
     private byte[] data;
 
     private String filePath;
