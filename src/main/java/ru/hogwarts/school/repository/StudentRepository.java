@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.hogwarts.school.model.Student;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Repository
@@ -16,12 +15,12 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> findByAgeBetween(int min, int max);
 
     @Query("SELECT COUNT(s) FROM Student s")
-    Long etStudentCount();
+    Long getStudentCount();
 
     @Query("SELECT AVG(s.age) FROM Student s")
     Double getAverageStudentAge();
 
     @Query("SELECT s FROM Student s ORDER BY s.id DESC")
-    List<Student> findLastFiveStudents(Pageable pageable);
+    List<Student> findTop5ByOrderIdDesc();
 
 }
