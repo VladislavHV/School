@@ -1,6 +1,8 @@
 package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     @Value("${path.to.avatars.folder}")
     private String avatarFolder;
@@ -41,6 +44,7 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     @Transactional
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
+        logger.info("Вызван метод uploadAvatar");
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -68,6 +72,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public byte[] getAvatarFromDb(Long studentId) {
+        logger.info("Вызван метод getAvatarFromDB");
         return avatarRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new RuntimeException("Avatar nod found"))
                 .getData();
@@ -75,6 +80,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public byte[] getAvatarFromFile(Long studentId) throws IOException {
+        logger.info("Вызван метод getAvatarFromFile");
         Avatar avatar = avatarRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new RuntimeException("Avatar not found"));
         return Files.readAllBytes(Paths.get(avatar.getFilePath()));
@@ -82,12 +88,14 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public Avatar findAvatar(Long studentId) {
+        logger.info("Вызван метод findAvatar");
         return avatarRepository.findByStudentId(studentId)
                 .orElse(new Avatar());
     }
 
     @Override
     public String getExtensions(String fileName) {
+        logger.info("Вызван метод getExtensions");
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
             throw new IllegalArgumentException("Файл не содержит расширения: " + fileName);
@@ -97,6 +105,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public byte[] generateDataForDB(Path filePath) throws IOException {
+        logger.info("Вызван метод generateDateForDB");
         try (
                 InputStream is = Files.newInputStream(filePath);
                 BufferedInputStream bis = new BufferedInputStream(is, 1024);
@@ -116,6 +125,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public Page<Avatar> getAvatarsPage(int page, int size) {
+        logger.debug("Вызван метод getAvatarsPage");
         Pageable pageable = PageRequest.of(page, size);
         return avatarRepository.findAll(pageable);
     }
