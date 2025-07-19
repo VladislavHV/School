@@ -20,7 +20,8 @@ public class Student {
 
     private String avatarsDir;
 
-    @Lob
+    //@Lob вызывает ошибку SQLFeatureNotSupportedException
+    @Column(name = "photo", columnDefinition = "BYTEA")
     private byte[] photo;
 
     @OneToOne(mappedBy = "student", cascade= CascadeType.ALL)

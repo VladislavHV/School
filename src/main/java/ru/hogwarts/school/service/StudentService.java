@@ -25,4 +25,10 @@ public interface StudentService {
     Faculty getFacultyByStudentId(Long studentId);
 
     Optional<Student> findById(Long id);
+
+    Long getStudentCount();
+
+    Double getAverageStudentAge();
+
+    List<Student> getLastStudents();
 }

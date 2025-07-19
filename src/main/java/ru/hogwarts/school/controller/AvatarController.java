@@ -1,6 +1,8 @@
 package ru.hogwarts.school.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,13 +17,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @RestController
 @RequestMapping("/avatars")
 public class AvatarController {
 
     private final AvatarService avatarService;
+    //private final AvatarRepository avatarRepository;
 
+    @Autowired
     public AvatarController(AvatarService avatarService) {
         this.avatarService = avatarService;
     }
@@ -60,6 +65,13 @@ public class AvatarController {
             response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Avatar>> getAvatarsPage(@RequestParam int page,
+                                                       @RequestParam int size) {
+        Page<Avatar> avatarPage = avatarService.getAvatarsPage(page, size);
+        return ResponseEntity.ok(avatarPage.getContent());
     }
 
 }
