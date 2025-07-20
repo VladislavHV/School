@@ -11,9 +11,7 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class FacultyServiceImpl implements FacultyService {
@@ -83,6 +81,16 @@ public class FacultyServiceImpl implements FacultyService {
         Faculty faculty = facultyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Faculty not found"));
         return faculty.getStudents();
+    }
+
+    @Override
+    public String getLongestFacultyName() {
+        return facultyRepository.findAll()
+                .stream()
+                .map(Faculty::getName)
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("No faculty found");
     }
 
 }

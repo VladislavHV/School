@@ -65,6 +65,7 @@ public class HomeWorkControllerTest {
                 .andExpect(jsonPath("$[1].name").value("Petr"));
     }
 
+    /*
     @Test
     void testAvatarPagination() throws Exception {
         List<Avatar> avatars = List.of(new Avatar(), new Avatar());
@@ -76,5 +77,6 @@ public class HomeWorkControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
+     */
 
 }

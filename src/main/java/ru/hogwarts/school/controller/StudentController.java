@@ -97,4 +97,9 @@ public class StudentController {
         return studentService.getLastStudents();
     }
 
+    @GetMapping("/students/names-starts-with-a")
+    public List<String> getStudentNamesStartingWithA() {
+        return studentService.getStudentNamesStartingWithA();
+    }
+
 }

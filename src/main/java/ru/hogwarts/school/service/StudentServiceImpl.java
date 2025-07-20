@@ -1,8 +1,8 @@
 package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
@@ -12,6 +12,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -98,13 +99,29 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Double getAverageStudentAge() {
         logger.info("Вызван метод getAverageStudentAge");
-        return studentRepository.getAverageStudentAge();
+        return studentRepository.findAll()
+                .stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0.0);
     }
 
     @Override
     public List<Student> getLastStudents() {
         logger.debug("Вызван метод getLastStudents");
         return studentRepository.findTop5ByOrderIdDesc();
+    }
+
+    @Override
+    public List<String> getStudentNamesStartingWithA() {
+        logger.info("Вызван метод getStudentNamesStartingWithA");
+        return studentRepository.findAll()
+                .stream()
+                .map(Student::getName)
+                .filter(name -> name != null && name.toUpperCase().startsWith("A"))
+                .map(String::toUpperCase)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
 }
