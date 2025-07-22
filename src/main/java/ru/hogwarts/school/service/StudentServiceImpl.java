@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -122,6 +124,64 @@ public class StudentServiceImpl implements StudentService {
                 .map(String::toUpperCase)
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ResponseEntity<Void> getStudentsPrintParallel() {
+        logger.info("Вызван метод getStudentsPrintParallel");
+        List<Student> students = new ArrayList<>(getAllStudents());
+        if (students.size() < 6) {
+            throw new RuntimeException("Необходимо минимум 6 студентов");
+        }
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        return ResponseEntity.ok().build();
+    }
+
+    private synchronized void printStudentNameSync(String name) {
+        System.out.println(name);
+    }
+
+    @Override
+    public ResponseEntity<Void> getPrintStudentNamesSynchronized() {
+        logger.info("Вызван метод printStudentNamesSynchronized");
+        List<Student> students2 = new ArrayList<>(getAllStudents());
+        if (students2.size() < 6) {
+            throw new RuntimeException("Необходимо минимум 6 студентов");
+        }
+
+        printStudentNameSync(students2.get(0).getName());
+        printStudentNameSync(students2.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+           printStudentNameSync(students2.get(2).getName());
+           printStudentNameSync(students2.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+           printStudentNameSync(students2.get(4).getName());
+           printStudentNameSync(students2.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        return ResponseEntity.ok().build();
     }
 
 }
