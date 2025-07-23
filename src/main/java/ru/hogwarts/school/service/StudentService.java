@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
@@ -31,4 +32,10 @@ public interface StudentService {
     Double getAverageStudentAge();
 
     List<Student> getLastStudents();
+
+    List<String> getStudentNamesStartingWithA();
+
+    ResponseEntity<Void> getStudentsPrintParallel();
+
+    ResponseEntity<Void> getPrintStudentNamesSynchronized();
 }

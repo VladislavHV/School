@@ -1,19 +1,26 @@
 package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
+
     private final StudentRepository studentRepository;
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     @Autowired
     public StudentServiceImpl(StudentRepository studentRepository) {
@@ -23,16 +30,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional
     public Student createStudent(Student student) {
+        logger.info("Вызван метод createStudent");
         return studentRepository.save(student);
     }
 
     @Override
     public Student getStudent(Long studentId) {
+        logger.info("Вызван метод getStudent");
         return studentRepository.findById(studentId).orElse(null);
     }
 
     @Override
     public Student updateStudent(Student student) {
+        logger.info("Вызван метод updateStudent");
         if (studentRepository.existsById(student.getId())) {
             return studentRepository.save(student);
         }
@@ -41,6 +51,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student deleteStudent(Long studentId) {
+        logger.warn("Вызван метод deleteStudent");
         Optional<Student> student = studentRepository.findById(studentId);
         if (student.isPresent()) {
             studentRepository.deleteById(studentId);
@@ -51,21 +62,25 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Collection<Student> getAllStudents() {
+        logger.info("Вызван метод getAllStudents");
         return studentRepository.findAll();
     }
 
     @Override
     public List<Student> getStudentByAge(int age) {
+        logger.info("Вызван метод getStudentByAge");
         return studentRepository.findStudentAllByAge(age);
     }
 
     @Override
     public List<Student> getStudentByAgeRange(int min, int max) {
+        logger.info("Вызван метод getStudentByAgeRange");
         return studentRepository.findByAgeBetween(min, max);
     }
 
     @Override
     public Faculty getFacultyByStudentId(Long studentId) {
+        logger.info("Вызван метод getFacultyByStudentId");
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         return student.getFaculty();
@@ -73,22 +88,100 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Optional<Student> findById(Long id) {
+        logger.info("Вызван метод findById");
         return studentRepository.findById(id);
     }
 
     @Override
     public Long getStudentCount() {
+        logger.info("Вызван метод getStudentCount");
         return studentRepository.getStudentCount();
     }
 
     @Override
     public Double getAverageStudentAge() {
-        return studentRepository.getAverageStudentAge();
+        logger.info("Вызван метод getAverageStudentAge");
+        return studentRepository.findAll()
+                .stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0.0);
     }
 
     @Override
     public List<Student> getLastStudents() {
+        logger.debug("Вызван метод getLastStudents");
         return studentRepository.findTop5ByOrderIdDesc();
+    }
+
+    @Override
+    public List<String> getStudentNamesStartingWithA() {
+        logger.info("Вызван метод getStudentNamesStartingWithA");
+        return studentRepository.findAll()
+                .stream()
+                .map(Student::getName)
+                .filter(name -> name != null && name.toUpperCase().startsWith("A"))
+                .map(String::toUpperCase)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ResponseEntity<Void> getStudentsPrintParallel() {
+        logger.info("Вызван метод getStudentsPrintParallel");
+        List<Student> students = new ArrayList<>(getAllStudents());
+        if (students.size() < 6) {
+            throw new RuntimeException("Необходимо минимум 6 студентов");
+        }
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        return ResponseEntity.ok().build();
+    }
+
+    private synchronized void printStudentNameSync(String name) {
+        System.out.println(name);
+    }
+
+    @Override
+    public ResponseEntity<Void> getPrintStudentNamesSynchronized() {
+        logger.info("Вызван метод printStudentNamesSynchronized");
+        List<Student> students2 = new ArrayList<>(getAllStudents());
+        if (students2.size() < 6) {
+            throw new RuntimeException("Необходимо минимум 6 студентов");
+        }
+
+        printStudentNameSync(students2.get(0).getName());
+        printStudentNameSync(students2.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+           printStudentNameSync(students2.get(2).getName());
+           printStudentNameSync(students2.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+           printStudentNameSync(students2.get(4).getName());
+           printStudentNameSync(students2.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        return ResponseEntity.ok().build();
     }
 
 }

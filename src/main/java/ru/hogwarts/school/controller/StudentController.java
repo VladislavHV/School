@@ -97,4 +97,19 @@ public class StudentController {
         return studentService.getLastStudents();
     }
 
+    @GetMapping("/students/names-starts-with-a")
+    public List<String> getStudentNamesStartingWithA() {
+        return studentService.getStudentNamesStartingWithA();
+    }
+
+    @GetMapping("/students/print-parallel")
+    public ResponseEntity<Void> getStudentsPrintParallel() {
+        return studentService.getStudentsPrintParallel();
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public ResponseEntity<Void> getPrintStudentNamesSynchronized() {
+        return studentService.getPrintStudentNamesSynchronized();
+    }
+
 }
